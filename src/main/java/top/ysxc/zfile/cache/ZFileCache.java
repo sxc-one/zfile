@@ -143,4 +143,17 @@ public class ZFileCache {
         }
         return keys;
     }
+
+    /**
+     * 从缓存中删除指定驱动器的某个路径的缓存
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @param   key
+     *          文件夹路径
+     */
+    public void remove(Integer driveId, String key) {
+        getCacheByDriveId(driveId).remove(new DriveCacheKey(driveId, key));
+    }
 }

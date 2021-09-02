@@ -3,9 +3,11 @@ package top.ysxc.zfile.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.ysxc.zfile.cache.ZFileCache;
+import top.ysxc.zfile.context.DriveContext;
 import top.ysxc.zfile.model.dto.CacheInfoDto;
 import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.repository.DriverConfigRepository;
+import top.ysxc.zfile.service.base.AbstractBaseFileService;
 
 import javax.annotation.Resource;
 import java.util.Set;
@@ -20,6 +22,9 @@ public class DriveConfigService {
 
     @Resource
     private DriverConfigRepository driverConfigRepository;
+
+    @Resource
+    private DriveContext driveContext;
 
     @Resource
     private ZFileCache zFileCache;
@@ -65,5 +70,25 @@ public class DriveConfigService {
         Set<String> keys = zFileCache.keySet(driveId);
         int cacheCount = keys.size();
         return new CacheInfoDto(cacheCount, hitCount, missCount, keys);
+    }
+
+    /**
+     * 刷新指定 key 的缓存:
+     *  1. 清空此 key 的缓存.
+     *  2. 重新调用方法写入缓存.
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @param   key
+     *          缓存 key (文件夹名称)
+     */
+    public void refreshCache(Integer driveId, String key) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("手动刷新缓存 driveId: {}, key: {}", driveId, key);
+        }
+        zFileCache.remove(driveId, key);
+        AbstractBaseFileService baseFileService = driveContext.get(driveId);
+        baseFileService.fileList(key);
     }
 }

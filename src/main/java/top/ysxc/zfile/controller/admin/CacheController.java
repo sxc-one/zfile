@@ -35,4 +35,10 @@ public class CacheController {
         CacheInfoDto cacheInfo = driveConfigService.findCacheInfo(driveId);
         return ResultBean.success(cacheInfo);
     }
+
+    @PostMapping("/{driveId}/refresh")
+    public ResultBean refreshCache(@PathVariable("driveId") Integer driveId, String key) {
+        driveConfigService.refreshCache(driveId, key);
+        return ResultBean.success();
+    }
 }
