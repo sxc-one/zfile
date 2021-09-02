@@ -1,3 +1,9 @@
+zfile:
+  cache:
+    auto_refresh:
+      interval: 1
+    timeout: 1800
+
 server:
   port: 8081
   servlet:

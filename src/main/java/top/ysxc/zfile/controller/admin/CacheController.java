@@ -1,9 +1,7 @@
 package top.ysxc.zfile.controller.admin;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.ysxc.zfile.model.dto.CacheInfoDto;
 import top.ysxc.zfile.model.support.ResultBean;
 import top.ysxc.zfile.service.DriveConfigService;
 
@@ -32,5 +30,9 @@ public class CacheController {
         return ResultBean.success();
     }
 
-
+    @GetMapping("/{driveId}/info")
+    public ResultBean cacheInfo(@PathVariable("driveId") Integer driveId) {
+        CacheInfoDto cacheInfo = driveConfigService.findCacheInfo(driveId);
+        return ResultBean.success(cacheInfo);
+    }
 }

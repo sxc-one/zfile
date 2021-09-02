@@ -16,5 +16,11 @@ public class DriveConfig {
     @Id
     private Integer id;
 
+    private Boolean enable;
+
+    private String name;
+
     private Boolean enableCache;
+
+    private Boolean autoRefreshCache;
 }
