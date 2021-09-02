@@ -37,8 +37,26 @@ public class CacheController {
     }
 
     @PostMapping("/{driveId}/refresh")
-    public ResultBean refreshCache(@PathVariable("driveId") Integer driveId, String key) {
+    public ResultBean refreshCache(@PathVariable("driveId") Integer driveId, String key) throws Exception{
         driveConfigService.refreshCache(driveId, key);
+        return ResultBean.success();
+    }
+
+    @PostMapping("/{driveId}/auto-refresh/start")
+    public ResultBean enableAutoRefresh(@PathVariable("driveId") Integer driveId) {
+        driveConfigService.startAutoCacheRefresh(driveId);
+        return ResultBean.success();
+    }
+
+    @PostMapping("/{driveId}/auto-refresh/stop")
+    public ResultBean disableAutoRefresh(@PathVariable("driveId") Integer driveId) {
+        driveConfigService.stopAutoCacheRefresh(driveId);
+        return ResultBean.success();
+    }
+
+    @PostMapping("/{driveId}/clear")
+    public ResultBean clearCache(@PathVariable("driveId") Integer driveId) {
+        driveConfigService.clearCache(driveId);
         return ResultBean.success();
     }
 }

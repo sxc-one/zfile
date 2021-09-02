@@ -91,4 +91,22 @@ public class DriveConfigService {
         AbstractBaseFileService baseFileService = driveContext.get(driveId);
         baseFileService.fileList(key);
     }
+
+    public void startAutoCacheRefresh(Integer driveId) {
+        DriveConfig driveConfig = findById(driveId);
+        driveConfig.setAutoRefreshCache(true);
+        driverConfigRepository.save(driveConfig);
+        zFileCache.startAutoCacheRefresh(driveId);
+    }
+
+    public void stopAutoCacheRefresh(Integer driveId) {
+        DriveConfig driveConfig = findById(driveId);
+        driveConfig.setAutoRefreshCache(false);
+        driverConfigRepository.save(driveConfig);
+        zFileCache.stopAutoCacheRefresh(driveId);
+    }
+
+    public void clearCache(Integer driveId) {
+        zFileCache.clear(driveId);
+    }
 }

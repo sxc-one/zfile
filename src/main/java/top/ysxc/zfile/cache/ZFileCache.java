@@ -85,28 +85,6 @@ public class ZFileCache {
     }
 
     /**
-     * 开启缓存自动刷新
-     *
-     * @param   driveId
-     *          驱动器 ID
-     */
-    public void startAutoCacheRefresh(Integer driveId) {
-        if (log.isDebugEnabled()) {
-            log.debug("开启缓存自动刷新 driveId: {}", driveId);
-        }
-        DriveConfig driveConfig = driverConfigRepository.findById(driveId).get();
-        Boolean autoRefreshCache = driveConfig.getAutoRefreshCache();
-        if (autoRefreshCache != null && autoRefreshCache) {
-            MyTimedCache<DriveCacheKey, List<FileItemDTO>> driveCache = drivesCache.get(driveId);
-            if (driveCache == null) {
-                driveCache = new MyTimedCache<>(timeout * 1000);
-                drivesCache.put(driveId, driveCache);
-            }
-            driveCache.schedulePrune(autoRefreshInterval * 1000);
-        }
-    }
-
-    /**
      * 获取指定驱动器的缓存命中数
      *
      * @param   driveId
@@ -155,5 +133,44 @@ public class ZFileCache {
      */
     public void remove(Integer driveId, String key) {
         getCacheByDriveId(driveId).remove(new DriveCacheKey(driveId, key));
+    }
+
+    /**
+     * 开启缓存自动刷新
+     *
+     * @param   driveId
+     *          驱动器 ID
+     */
+    public void startAutoCacheRefresh(Integer driveId) {
+        if (log.isDebugEnabled()) {
+            log.debug("开启缓存自动刷新 driveId: {}", driveId);
+        }
+        DriveConfig driveConfig = driverConfigRepository.findById(driveId).get();
+        Boolean autoRefreshCache = driveConfig.getAutoRefreshCache();
+        if (autoRefreshCache != null && autoRefreshCache) {
+            MyTimedCache<DriveCacheKey, List<FileItemDTO>> driveCache = drivesCache.get(driveId);
+            if (driveCache == null) {
+                driveCache = new MyTimedCache<>(timeout * 1000);
+                drivesCache.put(driveId, driveCache);
+            }
+            driveCache.schedulePrune(autoRefreshInterval * 1000);
+        }
+    }
+
+    public void stopAutoCacheRefresh(Integer driveId) {
+        if (log.isDebugEnabled()) {
+            log.debug("停止缓存自动刷新 driveId: {}", driveId);
+        }
+        MyTimedCache<DriveCacheKey, List<FileItemDTO>> driveCache = drivesCache.get(driveId);
+        if (driveCache != null) {
+            driveCache.cancelPruneSchedule();
+        }
+    }
+
+    public void clear(Integer driveId) {
+        if (log.isDebugEnabled()) {
+            log.debug("清空驱动器所有缓存, driveId: {}", driveId);
+        }
+        getCacheByDriveId(driveId).clear();
     }
 }
