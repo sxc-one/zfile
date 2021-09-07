@@ -23,4 +23,9 @@ public class DriveConfig {
     private Boolean enableCache;
 
     private Boolean autoRefreshCache;
+
+    private Integer orderNum;
+
+    private Boolean defaultSwitchToImgMode;
+
 }
