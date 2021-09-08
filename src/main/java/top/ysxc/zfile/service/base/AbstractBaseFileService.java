@@ -24,6 +24,11 @@ public abstract class AbstractBaseFileService implements BaseFileService {
     protected boolean isInitialized = false;
 
     /**
+     * 驱动器 ID
+     */
+    public Integer driveId;
+
+    /**
      * 获取是否初始化成功
      *
      * @return  初始化成功与否
@@ -53,4 +58,12 @@ public abstract class AbstractBaseFileService implements BaseFileService {
      *          驱动器 ID
      */
     public abstract void init(Integer driveId);
+
+    public Integer getDriveId() {
+        return driveId;
+    }
+
+    public void setDriveId(Integer driveId) {
+        this.driveId = driveId;
+    }
 }

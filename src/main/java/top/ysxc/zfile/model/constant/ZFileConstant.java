@@ -1,0 +1,22 @@
+package top.ysxc.zfile.model.constant;
+
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @author ysxc
+ * @create 2021-09-08 1:18 下午
+ */
+@Configuration
+public class ZFileConstant {
+
+    public static final String USER_HOME = System.getProperty("user.home");
+
+    public static final Character PATH_SEPARATOR_CHAR = '/';
+
+    public static final String PATH_SEPARATOR = "/";
+
+    /**
+     * 直链前缀名称
+     */
+    public static final String DIRECT_LINK_PREFIX = "directlink";
+}

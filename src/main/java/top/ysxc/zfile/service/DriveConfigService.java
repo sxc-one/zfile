@@ -10,6 +10,7 @@ import top.ysxc.zfile.context.DriveContext;
 import top.ysxc.zfile.context.StorageTypeContext;
 import top.ysxc.zfile.exception.InitializeDriveException;
 import top.ysxc.zfile.model.constant.StorageConfigConstant;
+import top.ysxc.zfile.model.constant.ZFileConstant;
 import top.ysxc.zfile.model.dto.CacheInfoDto;
 import top.ysxc.zfile.model.dto.DriveConfigDTO;
 import top.ysxc.zfile.model.dto.StorageStrategyConfig;
@@ -17,8 +18,11 @@ import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.model.entity.StorageConfig;
 import top.ysxc.zfile.model.enums.StorageTypeEnum;
 import top.ysxc.zfile.repository.DriverConfigRepository;
+import top.ysxc.zfile.repository.FilterConfigRepository;
+import top.ysxc.zfile.repository.ShortLinkConfigRepository;
 import top.ysxc.zfile.repository.StorageConfigRepository;
 import top.ysxc.zfile.service.base.AbstractBaseFileService;
+import top.ysxc.zfile.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
@@ -39,6 +43,12 @@ public class DriveConfigService {
 
     @Resource
     private StorageConfigRepository storageConfigRepository;
+
+    @Resource
+    private FilterConfigRepository filterConfigRepository;
+
+    @Resource
+    private ShortLinkConfigRepository shortLinkConfigRepository;
 
     @Resource
     private DriveContext driveContext;
@@ -183,6 +193,14 @@ public class DriveConfigService {
     }
 
     /**
+     * 更新驱动器设置
+     * @param driveConfig   驱动器设置
+     */
+    public void updateDriveConfig(DriveConfig driveConfig) {
+        driverConfigRepository.save(driveConfig);
+    }
+
+    /**
      * 保存驱动器基本信息及其对应的参数设置
      *
      * @param driveConfigDTO    驱动器 DTO 对象
@@ -265,6 +283,43 @@ public class DriveConfigService {
             return 1;
         } else {
             return maxId + 1;
+        }
+    }
+
+    public void updateId(Integer updateId, Integer newId) {
+        zFileCache.clear(updateId);
+        driverConfigRepository.updateId(updateId, newId);
+        storageConfigRepository.updateDriveId(updateId, newId);
+        filterConfigRepository.updateDriveId(updateId, newId);
+
+        String updateSubPath = StringUtils.concatUrl(StringUtils.DELIMITER_STR, ZFileConstant.DIRECT_LINK_PREFIX, String.valueOf(updateId));
+        String newSubPath = StringUtils.concatUrl(StringUtils.DELIMITER_STR, ZFileConstant.DIRECT_LINK_PREFIX, String.valueOf(newId));
+
+        shortLinkConfigRepository.updateUrlDriveId(updateSubPath, newSubPath);
+        driveContext.updateDriveId(updateId, newId);
+    }
+
+    /**
+     * 删除指定驱动器设置, 会级联删除其参数设置
+     *
+     * @param   id
+     *          驱动器 ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteById(Integer id) {
+        if (log.isDebugEnabled()) {
+            log.debug("尝试删除驱动器, driveId: {}", id);
+        }
+        DriveConfig driveConfig = driverConfigRepository.getOne(id);
+        driverConfigRepository.deleteById(id);
+        storageConfigRepository.deleteByDriveId(id);
+        if (driveConfig.getEnableCache()) {
+            zFileCache.stopAutoCacheRefresh(id);
+            zFileCache.clear(id);
+        }
+        driveContext.destroy(id);
+        if (log.isDebugEnabled()) {
+            log.debug("尝试删除驱动器成功, 已清理相关数据, driveId: {}", id);
         }
     }
 }

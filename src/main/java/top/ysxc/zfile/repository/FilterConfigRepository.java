@@ -4,31 +4,28 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import top.ysxc.zfile.model.entity.StorageConfig;
+import top.ysxc.zfile.model.entity.FilterConfig;
 
 import java.util.List;
 
 /**
  * @author ysxc
- * @create 2021-09-07 10:48 下午
+ * @create 2021-09-08 11:41 上午
  */
 @Repository
-public interface StorageConfigRepository extends JpaRepository<StorageConfig, Integer> {
-    /**
-     * 根据驱动器找到对应的配置信息
-     *
-     * @param   driveId
-     *          驱动器 ID
-     *
-     * @return  此驱动器所有的配置信息
-     */
-    List<StorageConfig> findByDriveId(Integer driveId);
+public interface FilterConfigRepository extends JpaRepository<FilterConfig, Integer> {
 
     /**
-     * 删除指定驱动器对应的配置信息
-     *
-     * @param   driveId
-     *          驱动器 ID
+     * 获取驱动器下的所有规则
+     * @param       driveId
+     *              驱动器 ID
+     */
+    List<FilterConfig> findByDriveId(Integer driveId);
+
+    /**
+     * 根据驱动器 ID 删除其所有的规则
+     * @param       driveId
+     *              驱动器 ID
      */
     void deleteByDriveId(Integer driveId);
 
@@ -42,6 +39,6 @@ public interface StorageConfigRepository extends JpaRepository<StorageConfig, In
      *          驱动器新 ID
      */
     @Modifying
-    @Query(value="update STORAGE_CONFIG set driveId = :newId where driveId = :updateId")
+    @Query(value="update FILTER_CONFIG set driveId = :newId where driveId = :updateId")
     void updateDriveId(Integer updateId, Integer newId);
 }

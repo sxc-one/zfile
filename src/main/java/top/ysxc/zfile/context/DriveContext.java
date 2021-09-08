@@ -77,6 +77,19 @@ public class DriveContext implements ApplicationContextAware {
     }
 
     /**
+     * 销毁指定驱动器的 Service.
+     *
+     * @param   driveId
+     *          驱动器 ID
+     */
+    public void destroy(Integer driveId) {
+        if (log.isDebugEnabled()) {
+            log.debug("清理驱动器上下文对象, driveId: {}", driveId);
+        }
+        drivesServiceMap.remove(driveId);
+    }
+
+    /**
      * 获取指定驱动器对应的 Service, 状态为未初始化
      *
      * @param   driveId
@@ -93,5 +106,20 @@ public class DriveContext implements ApplicationContextAware {
             }
         }
         return null;
+    }
+
+    /**
+     * 更新上下文环境中的驱动器 ID
+     *
+     * @param   updateId
+     *          驱动器原 ID
+     *
+     * @param   newId
+     *          驱动器新 ID
+     */
+    public void updateDriveId(Integer updateId, Integer newId) {
+        AbstractBaseFileService fileService = drivesServiceMap.remove(updateId);
+        fileService.setDriveId(newId);
+        drivesServiceMap.put(newId, fileService);
     }
 }
