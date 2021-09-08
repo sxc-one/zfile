@@ -21,4 +21,12 @@ public interface StorageConfigRepository extends JpaRepository<StorageConfig, In
      * @return  此驱动器所有的配置信息
      */
     List<StorageConfig> findByDriveId(Integer driveId);
+
+    /**
+     * 删除指定驱动器对应的配置信息
+     *
+     * @param   driveId
+     *          驱动器 ID
+     */
+    void deleteByDriveId(Integer driveId);
 }

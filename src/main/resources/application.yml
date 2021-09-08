@@ -1,4 +1,5 @@
 zfile:
+  debug: false
   cache:
     auto_refresh:
       interval: 1

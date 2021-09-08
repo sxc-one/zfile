@@ -4,14 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.ysxc.zfile.cache.ZFileCache;
 import top.ysxc.zfile.context.DriveContext;
+import top.ysxc.zfile.context.StorageTypeContext;
+import top.ysxc.zfile.exception.InitializeDriveException;
 import top.ysxc.zfile.model.constant.StorageConfigConstant;
 import top.ysxc.zfile.model.dto.CacheInfoDto;
 import top.ysxc.zfile.model.dto.DriveConfigDTO;
 import top.ysxc.zfile.model.dto.StorageStrategyConfig;
 import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.model.entity.StorageConfig;
+import top.ysxc.zfile.model.enums.StorageTypeEnum;
 import top.ysxc.zfile.repository.DriverConfigRepository;
 import top.ysxc.zfile.repository.StorageConfigRepository;
 import top.ysxc.zfile.service.base.AbstractBaseFileService;
@@ -176,5 +180,91 @@ public class DriveConfigService {
 
         driveConfigDTO.setStorageStrategyConfig(storageStrategyConfig);
         return driveConfigDTO;
+    }
+
+    /**
+     * 保存驱动器基本信息及其对应的参数设置
+     *
+     * @param driveConfigDTO    驱动器 DTO 对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void saveDriveConfigDTO(DriveConfigDTO driveConfigDTO) {
+
+        boolean updateFlag = driveConfigDTO.getId() != null;
+
+        // 保存基本信息
+        DriveConfig driveConfig = new DriveConfig();
+        StorageTypeEnum storageType = driveConfigDTO.getType();
+        BeanUtils.copyProperties(driveConfigDTO, driveConfig);
+
+        if (driveConfig.getId() == null) {
+            Integer nextId = selectNextId();
+            driveConfig.setId(nextId);
+        }
+        driverConfigRepository.save(driveConfig);
+
+        // 保存存储策略设置.
+        StorageStrategyConfig storageStrategyConfig = driveConfigDTO.getStorageStrategyConfig();
+
+        AbstractBaseFileService storageTypeService = StorageTypeContext.getStorageTypeService(storageType);
+
+        List<StorageConfig> storageConfigList = storageTypeService.storageStrategyConfigList();
+        storageConfigRepository.deleteByDriveId(driveConfigDTO.getId());
+
+        for (StorageConfig storageConfig : storageConfigList) {
+            String key = storageConfig.getKey();
+
+            try {
+                Field field = STORAGE_STRATEGY_CONFIG_CLASS.getDeclaredField(key);
+                field.setAccessible(true);
+                Object o = field.get(storageStrategyConfig);
+                String value = o == null ? null : o.toString();
+                storageConfig.setValue(value);
+                storageConfig.setType(storageType);
+                storageConfig.setDriveId(driveConfig.getId());
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                log.error("通过反射, 从 StorageStrategyConfig 中获取字段 {} 时出现异常:", key, e);
+            }
+        }
+        storageConfigRepository.saveAll(storageConfigList);
+
+        driveContext.init(driveConfig.getId());
+
+        AbstractBaseFileService driveService = driveContext.get(driveConfig.getId());
+        if (driveService.getIsUnInitialized()) {
+            throw new InitializeDriveException("初始化异常, 请检查配置是否正确.");
+        }
+
+        if (driveConfig.getAutoRefreshCache()) {
+            startAutoCacheRefresh(driveConfig.getId());
+        } else if (updateFlag) {
+            stopAutoCacheRefresh(driveConfig.getId());
+        }
+    }
+
+    /**
+     * 获取指定驱动器的存储策略.
+     *
+     * @param   id
+     *          驱动器 ID
+     *
+     * @return  驱动器对应的存储策略.
+     */
+    public StorageTypeEnum findStorageTypeById(Integer id) {
+        return driverConfigRepository.findById(id).get().getType();
+    }
+
+    /**
+     * 查询驱动器最大的 ID
+     *
+     * @return  驱动器最大 ID
+     */
+    public Integer selectNextId() {
+        Integer maxId = driverConfigRepository.selectMaxId();
+        if (maxId == null) {
+            return 1;
+        } else {
+            return maxId + 1;
+        }
     }
 }

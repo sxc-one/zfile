@@ -6,11 +6,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import top.ysxc.zfile.exception.InvalidDriveException;
+import top.ysxc.zfile.model.enums.StorageTypeEnum;
 import top.ysxc.zfile.service.DriveConfigService;
 import top.ysxc.zfile.service.base.AbstractBaseFileService;
+import top.ysxc.zfile.util.SpringContextHolder;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,6 +41,26 @@ public class DriveContext implements ApplicationContextAware {
     }
 
     /**
+     * 初始化指定驱动器的 Service, 添加到上下文环境中.
+     *
+     * @param   driveId
+     *          驱动器 ID.
+     */
+    public void init(Integer driveId) {
+        AbstractBaseFileService baseFileService = getBeanByDriveId(driveId);
+        if (baseFileService != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("尝试初始化驱动器, driveId: {}", driveId);
+            }
+            baseFileService.init(driveId);
+            if (log.isDebugEnabled()) {
+                log.debug("初始化驱动器成功, driveId: {}", driveId);
+            }
+            drivesServiceMap.put(driveId, baseFileService);
+        }
+    }
+
+    /**
      * 获取指定驱动器的 Service.
      *
      * @param   driveId
@@ -51,5 +74,24 @@ public class DriveContext implements ApplicationContextAware {
             throw new InvalidDriveException("此驱动器不存在或初始化失败, 请检查后台参数配置");
         }
         return abstractBaseFileService;
+    }
+
+    /**
+     * 获取指定驱动器对应的 Service, 状态为未初始化
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @return  驱动器对应未初始化的 Service
+     */
+    private AbstractBaseFileService getBeanByDriveId(Integer driveId) {
+        StorageTypeEnum storageTypeEnum = driveConfigService.findStorageTypeById(driveId);
+        Map<String, AbstractBaseFileService> beansOfType = SpringContextHolder.getBeansOfType(AbstractBaseFileService.class);
+        for (AbstractBaseFileService value : beansOfType.values()) {
+            if (Objects.equals(value.getStorageTypeEnum(), storageTypeEnum)) {
+                return SpringContextHolder.getBean(value.getClass());
+            }
+        }
+        return null;
     }
 }

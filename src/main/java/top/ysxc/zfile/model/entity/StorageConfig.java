@@ -1,6 +1,7 @@
 package top.ysxc.zfile.model.entity;
 
 import lombok.Data;
+import top.ysxc.zfile.model.enums.StorageTypeEnum;
 
 import javax.persistence.*;
 
@@ -15,6 +16,8 @@ public class StorageConfig {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private StorageTypeEnum type;
 
     @Column(name = "k")
     private String key;

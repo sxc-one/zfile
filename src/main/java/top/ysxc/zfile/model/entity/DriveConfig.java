@@ -1,6 +1,7 @@
 package top.ysxc.zfile.model.entity;
 
 import lombok.Data;
+import top.ysxc.zfile.model.enums.StorageTypeEnum;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -23,6 +24,14 @@ public class DriveConfig {
     private Boolean enableCache;
 
     private Boolean autoRefreshCache;
+
+    private StorageTypeEnum type;
+
+    private Boolean searchEnable;
+
+    private Boolean searchIgnoreCase;
+
+    private Boolean searchContainEncryptedFile;
 
     private Integer orderNum;
 

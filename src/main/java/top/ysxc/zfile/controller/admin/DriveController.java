@@ -1,9 +1,6 @@
 package top.ysxc.zfile.controller.admin;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.ysxc.zfile.model.dto.DriveConfigDTO;
 import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.model.support.ResultBean;
@@ -50,5 +47,14 @@ public class DriveController {
     public ResultBean driveItem(@PathVariable Integer driveId) {
         DriveConfigDTO driveConfig = driveConfigService.findDriveConfigDTOById(driveId);
         return ResultBean.success(driveConfig);
+    }
+
+    /**
+     * 保存驱动器设置
+     */
+    @PostMapping("/drive")
+    public ResultBean saveDriveItem(@RequestBody DriveConfigDTO driveConfigDTO) {
+        driveConfigService.saveDriveConfigDTO(driveConfigDTO);
+        return ResultBean.success();
     }
 }
