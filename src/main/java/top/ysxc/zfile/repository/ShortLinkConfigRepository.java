@@ -15,6 +15,14 @@ import top.ysxc.zfile.model.entity.ShortLinkConfig;
 public interface ShortLinkConfigRepository extends JpaRepository<ShortLinkConfig, Integer>, JpaSpecificationExecutor<ShortLinkConfig> {
 
     /**
+     * 获取驱动器下的所有规则
+     *
+     * @param       key
+     *              短链 Key
+     */
+    ShortLinkConfig findFirstByKey(String key);
+
+    /**
      * 更新驱动器 ID
      *
      * @param   updateSubPath
