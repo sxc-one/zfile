@@ -22,7 +22,19 @@ public class StorageConfig {
     @Column(name = "k")
     private String key;
 
+    private String title;
+
+    @Lob
     private String value;
 
     private Integer driveId;
+
+    public StorageConfig(String key, String title) {
+        this.key = key;
+        this.title = title;
+    }
+
+    public StorageConfig() {
+
+    }
 }
