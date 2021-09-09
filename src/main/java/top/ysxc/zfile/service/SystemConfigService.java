@@ -97,4 +97,14 @@ public class SystemConfigService {
 
         systemConfigRepository.save(systemConfig);
     }
+
+    /**
+     * 获取管理员名称
+     *
+     * @return  管理员名称
+     */
+    public String getAdminUsername() {
+        SystemConfigDTO systemConfigDTO = getSystemConfig();
+        return systemConfigDTO.getUsername();
+    }
 }
