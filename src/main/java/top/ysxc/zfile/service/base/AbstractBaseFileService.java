@@ -2,6 +2,7 @@ package top.ysxc.zfile.service.base;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ysxc.zfile.cache.ZFileCache;
+import top.ysxc.zfile.model.dto.FileItemDTO;
 import top.ysxc.zfile.model.entity.StorageConfig;
 import top.ysxc.zfile.model.enums.StorageTypeEnum;
 
@@ -66,4 +67,14 @@ public abstract class AbstractBaseFileService implements BaseFileService {
     public void setDriveId(Integer driveId) {
         this.driveId = driveId;
     }
+
+    /**
+     * 获取单个文件信息
+     *
+     * @param   path
+     *          文件路径
+     *
+     * @return  单个文件的内容.
+     */
+    public abstract FileItemDTO getFileItem(String path);
 }
