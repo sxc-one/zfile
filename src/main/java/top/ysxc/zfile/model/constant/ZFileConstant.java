@@ -21,6 +21,16 @@ public class ZFileConstant {
     public static final String DIRECT_LINK_PREFIX = "directlink";
 
     /**
+     * 页面文档文件
+     */
+    public static String README_FILE_NAME = "readme.md";
+
+    /**
+     * 密码文件
+     */
+    public static String PASSWORD_FILE_NAME = "password.txt";
+
+    /**
      * 最大支持文本文件大小为 ? KB 的文件内容.
      */
     public static Long TEXT_MAX_FILE_SIZE_KB = 100L;

@@ -2,6 +2,7 @@ package top.ysxc.zfile.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -321,5 +322,18 @@ public class DriveConfigService {
         if (log.isDebugEnabled()) {
             log.debug("尝试删除驱动器成功, 已清理相关数据, driveId: {}", id);
         }
+    }
+
+    /**
+     * 获取所有已启用的驱动器列表
+     *
+     * @return  已启用的驱动器列表
+     */
+    public List<DriveConfig> listOnlyEnable() {
+        DriveConfig driveConfig = new DriveConfig();
+        driveConfig.setEnable(true);
+        Example<DriveConfig> example = Example.of(driveConfig);
+        Sort sort = new Sort(Sort.Direction.ASC, "orderNum");
+        return driverConfigRepository.findAll(example, sort);
     }
 }

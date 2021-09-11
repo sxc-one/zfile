@@ -1,12 +1,17 @@
 package top.ysxc.zfile.service;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import top.ysxc.zfile.cache.ZFileCache;
+import top.ysxc.zfile.exception.InvalidDriveException;
 import top.ysxc.zfile.model.constant.SystemConfigConstant;
 import top.ysxc.zfile.model.dto.SystemConfigDTO;
+import top.ysxc.zfile.model.dto.SystemFrontConfigDTO;
+import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.model.entity.SystemConfig;
 import top.ysxc.zfile.repository.SystemConfigRepository;
 
@@ -28,6 +33,9 @@ public class SystemConfigService {
 
     @Resource
     private SystemConfigRepository systemConfigRepository;
+
+    @Resource
+    private DriveConfigService driveConfigService;
 
     private Class<SystemConfigDTO> systemConfigClazz = SystemConfigDTO.class;
 
@@ -106,5 +114,36 @@ public class SystemConfigService {
     public String getAdminUsername() {
         SystemConfigDTO systemConfigDTO = getSystemConfig();
         return systemConfigDTO.getUsername();
+    }
+
+    /**
+     * 获取是否已安装初始化
+     *
+     * @return  是否已安装初始化
+     */
+    public boolean getIsInstall() {
+        SystemConfigDTO systemConfigDTO = getSystemConfig();
+        return StrUtil.isNotEmpty(systemConfigDTO.getUsername());
+    }
+
+    /**
+     * 根据驱动器 ID, 获取对于前台页面的系统设置.
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @return  前台系统设置
+     */
+    public SystemFrontConfigDTO getSystemFrontConfig(Integer driveId) {
+        SystemConfigDTO systemConfig = getSystemConfig();
+        SystemFrontConfigDTO systemFrontConfigDTO = new SystemFrontConfigDTO();
+        BeanUtils.copyProperties(systemConfig, systemFrontConfigDTO);
+
+        DriveConfig driveConfig = driveConfigService.findById(driveId);
+        if (driveConfig == null) {
+            throw new InvalidDriveException("此驱动器不存在或初始化失败, 请检查后台参数配置");
+        }
+        systemFrontConfigDTO.setSearchEnable(driveConfig.getSearchEnable());
+        return systemFrontConfigDTO;
     }
 }

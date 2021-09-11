@@ -9,7 +9,8 @@ import java.util.Map;
  */
 public enum StorageTypeEnum {
 
-    LOCAL("local", "本地存储");
+    LOCAL("local", "本地存储"),
+    FTP("ftp", "FTP");
 
     private String key;
     private String description;
