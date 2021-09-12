@@ -7,4 +7,6 @@ package top.ysxc.zfile.model.constant;
 public class StorageConfigConstant {
 
     public static final String IS_PRIVATE = "isPrivate";
+
+    public static final String FILE_PATH_KEY = "filePath";
 }

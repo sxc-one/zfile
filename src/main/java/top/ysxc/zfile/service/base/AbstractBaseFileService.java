@@ -2,6 +2,7 @@ package top.ysxc.zfile.service.base;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ysxc.zfile.cache.ZFileCache;
+import top.ysxc.zfile.exception.InitializeDriveException;
 import top.ysxc.zfile.model.dto.FileItemDTO;
 import top.ysxc.zfile.model.entity.StorageConfig;
 import top.ysxc.zfile.model.enums.StorageTypeEnum;
@@ -28,6 +29,17 @@ public abstract class AbstractBaseFileService implements BaseFileService {
      * 驱动器 ID
      */
     public Integer driveId;
+
+    /**
+     * 测试是否连接成功, 会尝试取调用获取根路径的文件, 如果没有抛出异常, 则认为连接成功, 某些存储策略需要复写此方法.
+     */
+    protected void testConnection() {
+        try {
+            fileList("/");
+        } catch (Exception e) {
+            throw new InitializeDriveException("初始化异常, 错误信息为: " + e.getMessage(), e);
+        }
+    }
 
     /**
      * 获取是否初始化成功
