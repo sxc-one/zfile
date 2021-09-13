@@ -14,7 +14,9 @@ import top.ysxc.zfile.repository.ShortLinkConfigRepository;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author ysxc
@@ -28,6 +30,20 @@ public class ShortLinkConfigService {
 
     public ShortLinkConfig findByKey(String key) {
         return shortLinkConfigRepository.findFirstByKey(key);
+    }
+
+    public ShortLinkConfig findById(Integer id) {
+        Optional<ShortLinkConfig> shortLinkConfigOptional = shortLinkConfigRepository.findById(id);
+        return shortLinkConfigOptional.orElse(null);
+    }
+
+    public ShortLinkConfig findByUrl(String url) {
+        return shortLinkConfigRepository.findFirstByUrl(url);
+    }
+
+    public void save(ShortLinkConfig shortLinkConfig) {
+        shortLinkConfig.setCreateDate(new Date());
+        shortLinkConfigRepository.save(shortLinkConfig);
     }
 
     public Page<ShortLinkConfig> find(String key, String url, String dateFrom, String dateTo, Integer page, Integer limit, String orderBy, String orderDirection) {

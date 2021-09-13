@@ -23,6 +23,14 @@ public interface ShortLinkConfigRepository extends JpaRepository<ShortLinkConfig
     ShortLinkConfig findFirstByKey(String key);
 
     /**
+     * 获取驱动器下的所有规则
+     *
+     * @param       url
+     *              短链 URL
+     */
+    ShortLinkConfig findFirstByUrl(String url);
+
+    /**
      * 更新驱动器 ID
      *
      * @param   updateSubPath
