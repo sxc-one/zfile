@@ -1,17 +1,20 @@
 package top.ysxc.zfile.context;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import top.ysxc.zfile.exception.InvalidDriveException;
+import top.ysxc.zfile.model.entity.DriveConfig;
 import top.ysxc.zfile.model.enums.StorageTypeEnum;
 import top.ysxc.zfile.service.DriveConfigService;
 import top.ysxc.zfile.service.base.AbstractBaseFileService;
 import top.ysxc.zfile.util.SpringContextHolder;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,9 +38,20 @@ public class DriveContext implements ApplicationContextAware {
     @Resource
     private DriveConfigService driveConfigService;
 
+    /**
+     * 项目启动时, 自动调用数据库已存储的所有驱动器进行初始化.
+     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-
+        List<DriveConfig> list = driveConfigService.list();
+        for (DriveConfig driveConfig : list) {
+            try {
+                init(driveConfig.getId());
+                log.info("启动时初始化驱动器成功, 驱动器信息: {}", JSON.toJSONString(driveConfig));
+            } catch (Exception e) {
+                log.error("启动时初始化驱动器失败, 驱动器信息: {}", JSON.toJSONString(driveConfig), e);
+            }
+        }
     }
 
     /**

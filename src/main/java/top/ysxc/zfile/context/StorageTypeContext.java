@@ -10,6 +10,7 @@ import top.ysxc.zfile.service.base.AbstractBaseFileService;
 import java.util.Map;
 
 /**
+ * 存储类型工厂类
  * @author ysxc
  * @create 2021-09-08 10:21 上午
  */
@@ -19,6 +20,8 @@ public class StorageTypeContext implements ApplicationContextAware {
     private static Map<String, AbstractBaseFileService> storageTypeEnumFileServiceMap;
 
     private static ApplicationContext applicationContext;
+
+
     /**
      * 项目启动时执行
      */
