@@ -173,4 +173,35 @@ public class ZFileCache {
         }
         getCacheByDriveId(driveId).clear();
     }
+
+    /**
+     * 获取指定驱动器, 某个文件夹的名称
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @param   key
+     *          文件夹路径
+     *
+     * @return  驱动器中文件夹的内容
+     */
+    public List<FileItemDTO> get(Integer driveId, String key) {
+        return getCacheByDriveId(driveId).get(new DriveCacheKey(driveId, key), false);
+    }
+
+    /**
+     * 写入缓存
+     *
+     * @param   driveId
+     *          驱动器 ID
+     *
+     * @param   key
+     *          文件夹路径
+     *
+     * @param   value
+     *          文件夹中列表
+     */
+    public synchronized void put(Integer driveId, String key, List<FileItemDTO> value) {
+        getCacheByDriveId(driveId).put(new DriveCacheKey(driveId, key), value);
+    }
 }
