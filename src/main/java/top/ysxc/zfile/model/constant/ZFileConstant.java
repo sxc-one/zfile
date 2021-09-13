@@ -1,5 +1,7 @@
 package top.ysxc.zfile.model.constant;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -18,7 +20,7 @@ public class ZFileConstant {
     /**
      * 直链前缀名称
      */
-    public static final String DIRECT_LINK_PREFIX = "directlink";
+    public static String DIRECT_LINK_PREFIX = "directlink";
 
     /**
      * 系统产生的临时文件路径
@@ -44,4 +46,34 @@ public class ZFileConstant {
      * 最大支持文本文件大小为 ? KB 的文件内容.
      */
     public static Long TEXT_MAX_FILE_SIZE_KB = 100L;
+
+    @Autowired(required = false)
+    public void setTmpFilePath(@Value("${zfile.tmp.path}") String tmpFilePath) {
+        ZFileConstant.TMP_FILE_PATH = tmpFilePath;
+    }
+
+    @Autowired(required = false)
+    public void setHeaderFileName(@Value("${zfile.constant.readme}") String headerFileName) {
+        ZFileConstant.README_FILE_NAME = headerFileName;
+    }
+
+    @Autowired(required = false)
+    public void setPasswordFileName(@Value("${zfile.constant.password}") String passwordFileName) {
+        ZFileConstant.PASSWORD_FILE_NAME = passwordFileName;
+    }
+
+//    @Autowired(required = false)
+//    public void setAudioMaxFileSizeMb(@Value("${zfile.preview.audio.maxFileSizeMb}") Long maxFileSizeMb) {
+//        ZFileConstant.AUDIO_MAX_FILE_SIZE_MB = maxFileSizeMb;
+//    }
+
+//    @Autowired(required = false)
+//    public void setTextMaxFileSizeMb(@Value("${zfile.preview.text.maxFileSizeKb}") Long maxFileSizeKb) {
+//        ZFileConstant.TEXT_MAX_FILE_SIZE_KB = maxFileSizeKb;
+//    }
+
+    @Autowired(required = false)
+    public void setDirectLinkPrefix(@Value("${zfile.directLinkPrefix}") String directLinkPrefix) {
+        ZFileConstant.DIRECT_LINK_PREFIX = directLinkPrefix;
+    }
 }

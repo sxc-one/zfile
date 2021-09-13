@@ -1,11 +1,14 @@
 package top.ysxc.zfile.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.ToString;
 import top.ysxc.zfile.model.enums.StorageTypeEnum;
+import top.ysxc.zfile.model.enums.StorageTypeEnumSerializerConvert;
 
 /**
+ * 系统设置传输类
  * @author ysxc
  * @create 2021-09-01 4:26 下午
  */
@@ -20,7 +23,7 @@ public class SystemConfigDTO {
 
     private String username;
 
-//    @JsonSerialize(using = StorageTypeEnumSerializerConvert.class)
+    @JsonSerialize(using = StorageTypeEnumSerializerConvert.class)
     private StorageTypeEnum storageStrategy;
 
     @JsonIgnore

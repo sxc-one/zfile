@@ -1,5 +1,7 @@
 package top.ysxc.zfile.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +9,7 @@ import java.util.Map;
  * @author ysxc
  * @create 2021-09-08 10:07 上午
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum StorageTypeEnum {
 
     LOCAL("local", "本地存储"),
