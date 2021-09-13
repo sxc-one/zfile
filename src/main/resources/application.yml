@@ -1,10 +1,19 @@
 zfile:
   debug: false
   directLinkPrefix: directLink
+  log:
+    path: ${user.home}/.zfile/logs
+  db:
+    path: ${user.home}/.zfile/db/zfile
+  tmp:
+    path: ${user.home}/.zfile/tmp
   cache:
     auto_refresh:
       interval: 1
     timeout: 1800
+  constant:
+    readme: readme.md
+    password: password.txt
 
 server:
   port: 8081
@@ -15,3 +24,38 @@ server:
       max: 20
   compression:
     enabled: true
+
+spring:
+  h2:
+    console:
+      settings:
+        web-allow-others: true
+      path: /h2-console
+      enabled: ${zfile.debug}
+  datasource:
+    # 初始化数据导入
+    data: classpath*:db/data.sql
+    sql-script-encoding: utf-8
+    initialization-mode: always
+    continue-on-error: true
+    # h2 内存数据库 配置
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:${zfile.db.path}
+    username: zfile
+    password: 123456
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm
+    time-zone: GMT+8
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+    show-sql: false
+  resources:
+    chain:
+      gzipped: true
+  profiles:
+    active: prod
